@@ -20,7 +20,10 @@ const (
 	exitCodeErrUnexpected
 )
 
-const dbName = "ping1s.db"
+const (
+	dbName  = "ping1s.db"
+	version = "v1.3"
+)
 
 var (
 	homeDir     string
@@ -32,12 +35,6 @@ var (
 )
 
 func main() {
-	var err error
-	homeDir, err = os.UserHomeDir()
-	if err != nil {
-		stdOutErr(err)
-		os.Exit(int(exitCodeErrUnexpected))
-	}
 	initDB()
 	code, err := start()
 	if err != nil {
@@ -48,8 +45,8 @@ func main() {
 
 }
 
-func stdOutErr(err error) (int, error) {
-	return fmt.Fprintf(
+func stdOutErr(err error) {
+	fmt.Fprintf(
 		color.Error,
 		"[ %v ] %s\n",
 		color.New(color.FgRed, color.Bold).Sprint("ERROR"),
@@ -68,8 +65,14 @@ g-其他 h-影视 i-诗词 j-网易云 k-哲学 l-抖机灵
 教科书 花间集 诗经
 `)
 	flag.IntVarP(&commandArgs.Num, "num", "n", 10, "number of poetry")
+	flag.BoolVarP(&commandArgs.Version, "version", "v", false, "ping1s version")
 	flag.Usage = usage
 	flag.Parse()
+
+	if commandArgs.Version {
+		fmt.Printf("ping1s version: %s\n", version)
+		return exitCodeOK, nil
+	}
 
 	if flag.NArg() == 0 {
 		return exitCodeErrArgs, fmt.Errorf("host arg is required")
@@ -130,10 +133,18 @@ func initPing(host string) (*ping.Pinger, error) {
 		}
 	}()
 
+	color.New(color.FgHiWhite, color.Bold).Printf(
+		"PING %s (%s) type `Ctrl-C` to abort\n",
+		pinger.Addr(),
+		pinger.IPAddr(),
+	)
+
 	// receivedPacket is a callback function that will
 	pinger.OnRecv = pingRecv
 
 	pinger.OnFinish = pingFinish
+
+	//pinger.Timeout
 
 	if runtime.GOOS == "windows" {
 		pinger.SetPrivileged(true)
@@ -148,4 +159,15 @@ func usage() {
 Options:
 `)
 	flag.PrintDefaults()
+}
+
+func init() {
+	var err error
+	homeDir, err = os.UserHomeDir()
+	if err != nil {
+		stdOutErr(err)
+		os.Exit(int(exitCodeErrUnexpected))
+	}
+
+	initLog()
 }

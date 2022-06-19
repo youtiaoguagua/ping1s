@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/mattn/go-runewidth"
+	log "github.com/sirupsen/logrus"
+	"modernc.org/sqlite"
 	_ "modernc.org/sqlite"
 	"os"
 	"path"
@@ -18,7 +20,7 @@ func startQueryDb() (*[]string, *[]string) {
 		if err := recover(); err != nil {
 			fmt.Fprintf(
 				color.Error,
-				"[ %v ] %s\n",
+				"[ %v ] 数据库读取错误：%s\n",
 				color.New(color.FgRed, color.Bold).Sprint("ERROR"),
 				err,
 			)
@@ -49,17 +51,31 @@ func queryPoetry(db *sql.DB) *[]string {
 		commands += fmt.Sprintf("and collection = %s ", commandArgs.Collection)
 	}
 
-	rows, err := db.Query(fmt.Sprintf(`SELECT * FROM poetry where 1=1  %s ORDER BY RANDOM() limit %d`, commands, commandArgs.Num))
-
-	defer rows.Close()
-
+	count := 0
+	err := db.QueryRow(fmt.Sprintf(`SELECT count(1) FROM poetry where 1=1  %s ORDER BY RANDOM() limit %d`, commands, commandArgs.Num)).Scan(&count)
 	if err != nil {
+		if err == err.(*sqlite.Error) && err.(*sqlite.Error).Code() == 1 {
+			_ = os.Remove(path.Join(homeDir, "/.ping1s", dbName))
+		}
 		panic(err)
 	}
 
-	if !rows.Next() {
+	var rows *sql.Rows
+	if count == 0 {
 		rows, err = db.Query(fmt.Sprintf(`SELECT * FROM poetry  ORDER BY RANDOM() limit %d`, commandArgs.Num))
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		rows, err = db.Query(fmt.Sprintf(`SELECT * FROM poetry where 1=1  %s ORDER BY RANDOM() limit %d`, commands, commandArgs.Num))
 	}
+
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+
+	defer rows.Close()
 
 	var result []string
 	for rows.Next() {
@@ -67,12 +83,14 @@ func queryPoetry(db *sql.DB) *[]string {
 
 		err := rows.Scan(&poetry.ID, &poetry.Author, &poetry.Dynasty, &poetry.Title, &poetry.Paragraphs, &poetry.Collection)
 		if err != nil {
+			log.Error(err)
 			panic(err)
 		}
 
 		var paragraphListTmp []string
 		err = json.Unmarshal([]byte(poetry.Paragraphs.String), &paragraphListTmp)
 		if err != nil {
+			log.Error(err)
 			panic(err)
 		}
 
@@ -123,15 +141,23 @@ func queryHitokoto(db *sql.DB) *[]string {
 
 	hitokoto := Hitokoto{}
 
-	err := db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto where 1=1  %s ORDER BY RANDOM() limit 1`, commands)).
-		Scan(&hitokoto.ID, &hitokoto.Hitokoto, &hitokoto.Type, &hitokoto.From, &hitokoto.FromWho)
-
+	count := 0
+	err := db.QueryRow(fmt.Sprintf(`SELECT count(1) FROM hitokoto where 1=1  %s ORDER BY RANDOM() limit 1`, commands)).Scan(&count)
 	if err != nil {
-		err := db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto ORDER BY RANDOM() limit 1`)).
+		log.Error(err)
+		panic(err)
+	}
+
+	if count == 0 {
+		err = db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto ORDER BY RANDOM() limit 1`)).
 			Scan(&hitokoto.ID, &hitokoto.Hitokoto, &hitokoto.Type, &hitokoto.From, &hitokoto.FromWho)
 		if err != nil {
+			log.Error(err)
 			panic(err)
 		}
+	} else {
+		err = db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto where 1=1  %s ORDER BY RANDOM() limit 1`, commands)).
+			Scan(&hitokoto.ID, &hitokoto.Hitokoto, &hitokoto.Type, &hitokoto.From, &hitokoto.FromWho)
 	}
 
 	result := []string{hitokoto.Hitokoto.String, hitokoto.From.String}

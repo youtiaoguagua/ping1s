@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
+	log "github.com/sirupsen/logrus"
 	"io"
-	"log"
+	"io/fs"
 	"net/http"
 	"os"
 	"path"
@@ -43,19 +44,22 @@ func downloadDb(homeDir string) {
 	// download db
 	res, err := http.Get(dbUrl)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		return
 	}
 	defer res.Body.Close()
 
-	err = os.MkdirAll(path.Join(homeDir, "/.ping1s"), 777)
+	err = os.MkdirAll(path.Join(homeDir, "/.ping1s"), fs.ModePerm)
 
 	if err != nil {
+		log.Error(err)
 		panic(err)
 	}
+	os.Chmod(path.Join(homeDir, "/.ping1s"), fs.ModePerm)
 
 	out, err := os.Create(path.Join(homeDir, "/.ping1s", dbName))
 	if err != nil {
+		log.Error(err)
 		panic(err)
 	}
 	defer out.Close()
@@ -63,6 +67,7 @@ func downloadDb(homeDir string) {
 	// save db
 	_, err = io.Copy(out, res.Body)
 	if err != nil {
+		log.Error(err)
 		panic(err)
 	}
 }

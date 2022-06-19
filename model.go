@@ -1,6 +1,9 @@
 package main
 
-import "database/sql"
+import (
+	"database/sql"
+	"os"
+)
 
 type Poetry struct {
 	ID            sql.NullInt32  `json:"id"`
@@ -26,4 +29,10 @@ type CommandArgs struct {
 	Collection     string
 	Type           string
 	Num            int
+	Version        bool
+}
+
+type Logger struct {
+	file *os.File
+	size int64
 }
