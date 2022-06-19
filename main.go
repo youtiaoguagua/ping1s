@@ -58,9 +58,15 @@ func stdOutErr(err error) (int, error) {
 }
 
 func start() (exitCode, error) {
-	flag.StringVarP(&commandArgs.Type, "type", "t", "-1", "hitokoto type")
+	flag.StringVarP(&commandArgs.Type, "type", "t", "-1", `hitokoto type
+a-动画 b-漫画 c-游戏 d-文学 e-原创 f-来自网络 
+g-其他 h-影视 i-诗词 j-网易云 k-哲学 l-抖机灵
+`)
 	flag.StringVarP(&commandArgs.Author, "author", "a", "-1", "poetry author, such as 苏东坡")
-	flag.IntVarP(&commandArgs.CollectionType, "collection", "c", -1, "collection of poetry,")
+	flag.IntVarP(&commandArgs.CollectionType, "collection", "c", -1, `collection of poetry
+南唐二主词 唐诗 宋词 
+教科书 花间集 诗经
+`)
 	flag.IntVarP(&commandArgs.Num, "num", "n", 10, "number of poetry")
 	flag.Usage = usage
 	flag.Parse()

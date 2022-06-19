@@ -8,19 +8,17 @@ before:
     - go generate ./...
 builds:
   - env:
-      - CGO_ENABLED=1
+      - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
-    id: "with-hooks"
-    targets:
-      - "darwin_amd64"
-      - "windows_amd64"
+    ignore:
+      - goos: windows
+        goarch: arm64
     hooks:
       post:
-        - upx "{{ .Path }}"
-        - codesign -project="{{ .ProjectName }}" "{{ .Path }}"
+        - upx -9 "{{ .Path }}"
 archives:
   - replacements:
       darwin: Darwin

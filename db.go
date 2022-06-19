@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/mattn/go-runewidth"
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 	"os"
 	"path"
 	"regexp"
@@ -25,7 +25,7 @@ func startQueryDb() (*[]string, *[]string) {
 			os.Exit(int(exitCodeErrDB))
 		}
 	}()
-	db, err := sql.Open("sqlite3", path.Join(homeDir, "/.ping1s", dbName))
+	db, err := sql.Open("sqlite", path.Join(homeDir, "/.ping1s", dbName))
 	if err != nil {
 		panic(err)
 	}
@@ -51,8 +51,14 @@ func queryPoetry(db *sql.DB) *[]string {
 
 	rows, err := db.Query(fmt.Sprintf(`SELECT * FROM poetry where 1=1  %s ORDER BY RANDOM() limit %d`, commands, commandArgs.Num))
 
+	defer rows.Close()
+
 	if err != nil {
 		panic(err)
+	}
+
+	if !rows.Next() {
+		rows, err = db.Query(fmt.Sprintf(`SELECT * FROM poetry  ORDER BY RANDOM() limit %d`, commandArgs.Num))
 	}
 
 	var result []string
@@ -115,13 +121,17 @@ func queryHitokoto(db *sql.DB) *[]string {
 		commands += fmt.Sprintf("and type = '%s' ", commandArgs.Type)
 	}
 
-	row := db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto where 1=1  %s ORDER BY RANDOM() limit 1`, commands))
-
 	hitokoto := Hitokoto{}
 
-	err := row.Scan(&hitokoto.ID, &hitokoto.Hitokoto, &hitokoto.Type, &hitokoto.From, &hitokoto.FromWho)
+	err := db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto where 1=1  %s ORDER BY RANDOM() limit 1`, commands)).
+		Scan(&hitokoto.ID, &hitokoto.Hitokoto, &hitokoto.Type, &hitokoto.From, &hitokoto.FromWho)
+
 	if err != nil {
-		panic(err)
+		err := db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto ORDER BY RANDOM() limit 1`)).
+			Scan(&hitokoto.ID, &hitokoto.Hitokoto, &hitokoto.Type, &hitokoto.From, &hitokoto.FromWho)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	result := []string{hitokoto.Hitokoto.String, hitokoto.From.String}
