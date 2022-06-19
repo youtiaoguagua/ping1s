@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const dbUrl = "https://cdn.jsdelivr.net/gh/youtiaoguagua/ping1s@master/ping1s.db"
+const dbUrl = "https://wxfwxfwxf.coding.net/p/ping1sping1s/d/ping1s/git/raw/master/ping1s.db"
 
 func initDB() {
 	defer func() {
