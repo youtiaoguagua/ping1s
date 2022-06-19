@@ -16,6 +16,7 @@ builds:
     ignore:
       - goos: windows
         goarch: arm64
+      - goarch: 386
     hooks:
       post:
         - upx -9 "{{ .Path }}"
