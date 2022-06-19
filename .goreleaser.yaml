@@ -18,9 +18,6 @@ builds:
       - "darwin_amd64"
       - "windows_amd64"
     hooks:
-      pre:
-        - first-script.sh
-        - second-script.sh
       post:
         - upx "{{ .Path }}"
         - codesign -project="{{ .ProjectName }}" "{{ .Path }}"
