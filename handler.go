@@ -16,7 +16,7 @@ func handlerPing1s(index int) string {
 
 	res := (*poetryList)[index]
 
-	return res
+	return color.New(color.FgHiWhite, color.Bold).Sprintf(res)
 }
 
 func pingRecv(pkt *ping.Packet) {
