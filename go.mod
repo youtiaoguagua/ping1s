@@ -7,6 +7,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/go-ping/ping v1.1.0
 	github.com/mattn/go-runewidth v0.0.13
+	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/pflag v1.0.5
 	modernc.org/sqlite v1.17.3
 )
@@ -19,7 +20,6 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.13 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/mod v0.3.0 // indirect
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
