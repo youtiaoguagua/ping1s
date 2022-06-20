@@ -3,18 +3,18 @@
 </div>
 
 <div align="center">
-<img src="https://img.shields.io/static/v1?label=Language&message=Go&color=blue&style=flat-square">
-<img src="https://img.shields.io/static/v1?label=License&message=MIT&color=blue&style=flat-square">
-<img src="https://img.shields.io/github/v/release/sheepla/pingu?style=flat-square">
+    <img src="https://img.shields.io/static/v1?label=Language&message=Go&color=blue&style=flat-square">
+    <img src="https://img.shields.io/static/v1?label=License&message=MIT&color=blue&style=flat-square">
+    <img src="https://img.shields.io/github/v/release/youtiaoguagua/ping1s?style=flat-square">
 </div>
 
-</br>
+<br>
 
 <div align="center">
 <img width="700px" src="https://user-images.githubusercontent.com/30404329/174639731-75565910-66a8-4cf3-a381-e2a5d12c4c8e.png">
 </div>
 
-# ping
+# ping1s
 
 Do you find it boring when ping? We can only stare at the screen.
 
@@ -42,7 +42,7 @@ Options:
 
 ## Installation
 
-You can download executable binaries from github release.
+You can download ping1s from github release.
 
 ## LICENSE
 
