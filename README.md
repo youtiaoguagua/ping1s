@@ -8,7 +8,7 @@
 <img src="https://img.shields.io/github/v/release/sheepla/pingu?style=flat-square">
 </div>
 
-</br>
+<br>
 
 <div align="center">
 <img width="700px" src="https://user-images.githubusercontent.com/30404329/174639731-75565910-66a8-4cf3-a381-e2a5d12c4c8e.png">
