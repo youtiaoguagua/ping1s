@@ -32,12 +32,6 @@ var (
 )
 
 func main() {
-	var err error
-	homeDir, err = os.UserHomeDir()
-	if err != nil {
-		stdOutErr(err)
-		os.Exit(int(exitCodeErrUnexpected))
-	}
 	initDB()
 	code, err := start()
 	if err != nil {
@@ -48,8 +42,8 @@ func main() {
 
 }
 
-func stdOutErr(err error) (int, error) {
-	return fmt.Fprintf(
+func stdOutErr(err error) {
+	fmt.Fprintf(
 		color.Error,
 		"[ %v ] %s\n",
 		color.New(color.FgRed, color.Bold).Sprint("ERROR"),
@@ -148,4 +142,15 @@ func usage() {
 Options:
 `)
 	flag.PrintDefaults()
+}
+
+func init() {
+	var err error
+	homeDir, err = os.UserHomeDir()
+	if err != nil {
+		stdOutErr(err)
+		os.Exit(int(exitCodeErrUnexpected))
+	}
+
+	initLog()
 }

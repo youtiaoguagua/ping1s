@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/mattn/go-runewidth"
+	log "github.com/sirupsen/logrus"
+	"modernc.org/sqlite"
 	_ "modernc.org/sqlite"
 	"os"
 	"path"
@@ -18,7 +20,7 @@ func startQueryDb() (*[]string, *[]string) {
 		if err := recover(); err != nil {
 			fmt.Fprintf(
 				color.Error,
-				"[ %v ] %s\n",
+				"[ %v ] 数据库读取错误：%s\n",
 				color.New(color.FgRed, color.Bold).Sprint("ERROR"),
 				err,
 			)
@@ -54,11 +56,19 @@ func queryPoetry(db *sql.DB) *[]string {
 	defer rows.Close()
 
 	if err != nil {
+		if err == err.(*sqlite.Error) && err.(*sqlite.Error).Code() == 1 {
+			_ = os.Remove(path.Join(homeDir, "/.ping1s", dbName))
+		}
+		log.Error(err)
 		panic(err)
 	}
 
 	if !rows.Next() {
 		rows, err = db.Query(fmt.Sprintf(`SELECT * FROM poetry  ORDER BY RANDOM() limit %d`, commandArgs.Num))
+		if err != nil {
+			log.Error(err)
+			panic(err)
+		}
 	}
 
 	var result []string
@@ -67,12 +77,14 @@ func queryPoetry(db *sql.DB) *[]string {
 
 		err := rows.Scan(&poetry.ID, &poetry.Author, &poetry.Dynasty, &poetry.Title, &poetry.Paragraphs, &poetry.Collection)
 		if err != nil {
+			log.Error(err)
 			panic(err)
 		}
 
 		var paragraphListTmp []string
 		err = json.Unmarshal([]byte(poetry.Paragraphs.String), &paragraphListTmp)
 		if err != nil {
+			log.Error(err)
 			panic(err)
 		}
 
@@ -130,6 +142,7 @@ func queryHitokoto(db *sql.DB) *[]string {
 		err := db.QueryRow(fmt.Sprintf(`SELECT * FROM hitokoto ORDER BY RANDOM() limit 1`)).
 			Scan(&hitokoto.ID, &hitokoto.Hitokoto, &hitokoto.Type, &hitokoto.From, &hitokoto.FromWho)
 		if err != nil {
+			log.Error(err)
 			panic(err)
 		}
 	}
