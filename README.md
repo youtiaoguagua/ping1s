@@ -42,7 +42,7 @@ Options:
 
 ## Installation
 
-You can download ping1s from github release.
+You can download ping1s from [github release](https://github.com/youtiaoguagua/ping1s/releases).
 
 ## LICENSE
 
