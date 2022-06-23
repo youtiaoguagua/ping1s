@@ -42,6 +42,15 @@ Options:
 
 ## Installation
 
+**macOS**
+
+```shell
+brew tap youtiaoguagua/tap
+brew install ping1s
+``` 
+
+**other**
+
 You can download ping1s from [github release](https://github.com/youtiaoguagua/ping1s/releases).
 
 ## LICENSE
