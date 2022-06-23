@@ -45,6 +45,7 @@ brews:
     commit_author:
       name: goreleaserbot
       email: bot@goreleaser.com
+    url_template: "https://ghproxy.com/https://github.com/youtiaoguagua/ping1s/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     homepage: "https://github.com/youtiaoguagua/ping1s"
     description: "Now you can use ping1s, you can learn an ancient poem in 1 second, isn't it interesting!"
     license: "MIT"
