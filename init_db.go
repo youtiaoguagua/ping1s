@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-const dbUrl = "https://cdn.jsdelivr.net/gh/youtiaoguagua/ping1s@master/ping1s.db"
+const dbUrl = "https://ghproxy.com/https://raw.githubusercontent.com/youtiaoguagua/ping1s/master/ping1s.db"
 
 func initDB() {
 	defer func() {
@@ -30,14 +30,20 @@ func initDB() {
 
 	exists := dbExists(homeDir)
 	if !exists {
-		s := spinner.New(spinner.CharSets[14], 500*time.Millisecond)
-		s.Color("blue")
-		s.Prefix = color.New(color.FgHiYellow, color.Bold).Sprintf("init ping1s: ")
-		s.Start()
-		downloadDb(homeDir)
-		s.Stop()
+		startDownload()
+	} else {
+		// 判断数据库是否损坏
 	}
 
+}
+
+func startDownload() {
+	s := spinner.New(spinner.CharSets[14], 500*time.Millisecond)
+	s.Color("blue")
+	s.Prefix = color.New(color.FgHiYellow, color.Bold).Sprintf("初始化数据: ")
+	s.Start()
+	downloadDb(homeDir)
+	s.Stop()
 }
 
 func downloadDb(homeDir string) {
@@ -49,12 +55,6 @@ func downloadDb(homeDir string) {
 	}
 	defer res.Body.Close()
 
-	err = os.MkdirAll(path.Join(homeDir, "/.ping1s"), fs.ModePerm)
-
-	if err != nil {
-		log.Error(err)
-		panic(err)
-	}
 	os.Chmod(path.Join(homeDir, "/.ping1s"), fs.ModePerm)
 
 	out, err := os.Create(path.Join(homeDir, "/.ping1s", dbName))

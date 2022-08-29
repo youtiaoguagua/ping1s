@@ -24,6 +24,12 @@ func startQueryDb() (*[]string, *[]string) {
 				color.New(color.FgRed, color.Bold).Sprint("ERROR"),
 				err,
 			)
+			_ = os.Remove(path.Join(homeDir, "/.ping1s", dbName))
+			fmt.Fprintf(
+				color.Error,
+				"[ %v ] 已经删除数据库，请重试！\n",
+				color.New(color.FgRed, color.Bold).Sprint("ERROR"),
+			)
 			os.Exit(int(exitCodeErrDB))
 		}
 	}()
@@ -48,11 +54,12 @@ func queryPoetry(db *sql.DB) *[]string {
 		commands += fmt.Sprintf("and author = '%s' ", commandArgs.Author)
 	}
 	if commandArgs.CollectionType != -1 {
-		commands += fmt.Sprintf("and collection = %s ", commandArgs.Collection)
+		commands += fmt.Sprintf("and collection = '%s' ", commandArgs.Collection)
 	}
 
 	count := 0
-	err := db.QueryRow(fmt.Sprintf(`SELECT count(1) FROM poetry where 1=1  %s ORDER BY RANDOM() limit %d`, commands, commandArgs.Num)).Scan(&count)
+	countSql := fmt.Sprintf(`SELECT count(1) FROM poetry where 1=1  %s ORDER BY RANDOM() limit %d`, commands, commandArgs.Num)
+	err := db.QueryRow(countSql).Scan(&count)
 	if err != nil {
 		if err == err.(*sqlite.Error) && err.(*sqlite.Error).Code() == 1 {
 			_ = os.Remove(path.Join(homeDir, "/.ping1s", dbName))

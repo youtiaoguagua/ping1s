@@ -5,8 +5,10 @@ import (
 	"github.com/fatih/color"
 	"github.com/go-ping/ping"
 	flag "github.com/spf13/pflag"
+	"io/fs"
 	"os"
 	"os/signal"
+	"path"
 	"runtime"
 )
 
@@ -169,5 +171,11 @@ func init() {
 		os.Exit(int(exitCodeErrUnexpected))
 	}
 
+	err = os.MkdirAll(path.Join(homeDir, "/.ping1s"), fs.ModePerm)
+
+	if err != nil {
+		stdOutErr(err)
+		os.Exit(int(exitCodeErrUnexpected))
+	}
 	initLog()
 }
