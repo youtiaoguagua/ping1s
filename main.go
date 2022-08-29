@@ -63,8 +63,8 @@ g-其他 h-影视 i-诗词 j-网易云 k-哲学 l-抖机灵
 `)
 	flag.StringVarP(&commandArgs.Author, "author", "a", "-1", "poetry author, such as 苏东坡")
 	flag.IntVarP(&commandArgs.CollectionType, "collection", "c", -1, `collection of poetry
-南唐二主词 唐诗 宋词 
-教科书 花间集 诗经
+ 0-诗经 1-唐诗 2-宋词 
+3-教科书 4-花间集 5-南唐二主词
 `)
 	flag.IntVarP(&commandArgs.Num, "num", "n", 10, "number of poetry")
 	flag.BoolVarP(&commandArgs.Version, "version", "v", false, "ping1s version")
