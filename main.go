@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/go-ping/ping"
+	probing "github.com/prometheus-community/pro-bing"
 	flag "github.com/spf13/pflag"
 	"io/fs"
 	"os"
 	"os/signal"
 	"path"
-	"runtime"
 )
 
 type exitCode int
@@ -48,7 +47,7 @@ func main() {
 }
 
 func stdOutErr(err error) {
-	fmt.Fprintf(
+	_, _ = fmt.Fprintf(
 		color.Error,
 		"[ %v ] %s\n",
 		color.New(color.FgRed, color.Bold).Sprint("ERROR"),
@@ -120,8 +119,8 @@ func coverCollection() {
 	}
 }
 
-func initPing(host string) (*ping.Pinger, error) {
-	pinger, err := ping.NewPinger(host)
+func initPing(host string) (*probing.Pinger, error) {
+	pinger, err := probing.NewPinger(host)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init pinger %w", err)
 	}
@@ -135,7 +134,7 @@ func initPing(host string) (*ping.Pinger, error) {
 		}
 	}()
 
-	color.New(color.FgHiWhite, color.Bold).Printf(
+	_, _ = color.New(color.FgHiWhite, color.Bold).Printf(
 		"PING %s (%s) type `Ctrl-C` to abort\n",
 		pinger.Addr(),
 		pinger.IPAddr(),
@@ -146,17 +145,11 @@ func initPing(host string) (*ping.Pinger, error) {
 
 	pinger.OnFinish = pingFinish
 
-	//pinger.Timeout
-
-	if runtime.GOOS == "windows" {
-		pinger.SetPrivileged(true)
-	}
-
 	return pinger, nil
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `Usage: ping1s [Options] HOST
+	_, _ = fmt.Fprintf(os.Stderr, `Usage: ping1s [Options] HOST
 
 Options:
 `)

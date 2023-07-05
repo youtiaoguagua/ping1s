@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/go-ping/ping"
 	"github.com/mattn/go-runewidth"
+	probing "github.com/prometheus-community/pro-bing"
 	"strings"
 )
 
@@ -19,19 +19,19 @@ func handlerPing1s(index int) string {
 	return color.New(color.FgHiWhite, color.Bold).Sprintf(res)
 }
 
-func pingRecv(pkt *ping.Packet) {
+func pingRecv(pkt *probing.Packet) {
 	fmt.Printf("seq=%s %sbytes from %s: ttl=%s time=%s %s\n",
 		color.New(color.FgHiYellow, color.Bold).Sprintf("%-2d", pkt.Seq),
 		color.New(color.FgHiBlue, color.Bold).Sprintf("%d", pkt.Nbytes),
 		color.New(color.FgWhite, color.Bold).Sprintf("%s", pkt.IPAddr),
-		color.New(color.FgHiCyan, color.Bold).Sprintf("%d", pkt.Ttl),
+		color.New(color.FgHiCyan, color.Bold).Sprintf("%d", pkt.TTL),
 		color.New(color.FgHiMagenta, color.Bold).Sprintf("%-10v", pkt.Rtt),
 		handlerPing1s(pkt.Seq),
 	)
 }
 
-func pingFinish(stats *ping.Statistics) {
-	color.New(color.FgWhite, color.Bold).Printf(
+func pingFinish(stats *probing.Statistics) {
+	_, _ = color.New(color.FgWhite, color.Bold).Printf(
 		"\n───────── %s ping statistics ─────────\n",
 		stats.Addr,
 	)
