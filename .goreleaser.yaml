@@ -2,29 +2,18 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - id: amd
-    goos:
+  - goos:
       - linux
       - windows
       - darwin
     goarch:
       - amd64
-    hooks:
-      post:
-        - upx -9 "{{ .Path }}"
-  - id: arm
-    goos:
-      - linux
-      - darwin
-    goarch:
       - arm64
-archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+upx:
+  - enabled: true
+    goos: [ linux , darwin, windows ]
+    goarch: [ amd64 ]
+
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -37,7 +26,7 @@ changelog:
       - '^test:'
 
 brews:
-  - tap:
+  - repository:
       owner: youtiaoguagua
       name: homebrew-tap
       branch: main
